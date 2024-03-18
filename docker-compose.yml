@@ -1,0 +1,39 @@
+version: '1'
+
+services:
+  backend:
+    container_name: backend
+    build: ./backend
+    ports:
+      - 3000:3000
+    depends_on:
+      - postgres
+    networks:
+      - ensolvers_network
+    volumes:
+      - ./backend:/app  # Vincula la carpeta local de backend con /app dentro del contenedor
+      - /app/node_modules
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    ports:
+      - 80:80
+    networks:
+      - ensolvers_network
+
+  postgres:
+    container_name: db
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: dbname
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    ports:
+      - 5432:5432
+    networks:
+      - ensolvers_network
+networks:
+  ensolvers_network:
+    driver: bridge
