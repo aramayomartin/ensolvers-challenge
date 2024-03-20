@@ -34,6 +34,8 @@ services:
       - 5432:5432
     networks:
       - ensolvers_network
+    volumes:
+      - ./backend/postgres_data:/var/lib/postgresql/data
 networks:
   ensolvers_network:
     driver: bridge

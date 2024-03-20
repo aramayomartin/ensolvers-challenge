@@ -4,6 +4,8 @@ import {
   Column,
   ManyToOne,
   JoinColumn,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { Category } from './category.entity';
 
@@ -21,10 +23,7 @@ export class Note {
   @Column({ default: false })
   archived: boolean;
 
-  @Column({ default: false })
-  completed: boolean;
-
-  @ManyToOne(() => Category, (category) => category.notes)
-  @JoinColumn({ name: 'category_id' })
-  category: Category;
+  @ManyToMany(() => Category, (category) => category.notes)
+  @JoinTable()
+  categories: Category[];
 }
