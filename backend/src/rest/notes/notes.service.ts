@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable, UsePipes, ValidationPipe } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { CreateNoteDto } from './dto/create-note.dto';
 import { UpdateNoteDto } from './dto/update-note.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -16,6 +22,11 @@ export class NotesService {
 
   async create(createNoteDto: CreateNoteDto) {
     const note = this.repository.create(createNoteDto);
+    const categories = await this.categoryService.findByIds(
+      createNoteDto.categoriesIds,
+    );
+    delete createNoteDto.categoriesIds;
+    Object.assign(note, { ...createNoteDto, categories });
     return await this.repository.save(note);
   }
 
@@ -38,7 +49,8 @@ export class NotesService {
     return await this.repository.save(note);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} note`;
+  async remove(id: number) {
+    const note = await this.repository.findOne({ where: { id } });
+    return await this.repository.remove(note);
   }
 }

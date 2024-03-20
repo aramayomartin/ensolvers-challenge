@@ -18,9 +18,12 @@ services:
     container_name: frontend
     build: ./frontend
     ports:
-      - 80:80
+      - 3001:5173
     networks:
       - ensolvers_network
+    volumes:
+      - ./frontend:/app  # Vincula la carpeta local de backend con /app dentro del contenedor
+      - /app/node_modules
 
   postgres:
     container_name: db
