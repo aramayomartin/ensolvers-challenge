@@ -1,26 +1,21 @@
 # Usar una imagen de Node.js como base
-FROM node:14-alpine as builder
+FROM node:20-alpine
 
-# Establecer el directorio de trabajo dentro del contenedor
+
+# Set the working directory in the container
 WORKDIR /app
 
-# Copiar el archivo package.json e instalar las dependencias
+# Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
+
+# Install app dependencies
 RUN npm install
 
-# Copiar el resto de los archivos de la aplicación
+# Copy the rest of your application code to the working directory
 COPY . .
 
-# Construir la aplicación React
-RUN npm run build
+# Expose a port to communicate with the React app
+EXPOSE 5173
 
-# Usar una imagen de Nginx para servir la aplicación construida
-FROM nginx:alpine
-
-# Copiar los archivos de la aplicación construida desde el "builder" stage al directorio de trabajo de Nginx
-COPY --from=builder /app/build /usr/share/nginx/html
-
-# Exponer el puerto en el que se ejecuta Nginx
-EXPOSE 80
-
-# No se necesita un comando CMD, ya que la imagen de Nginx tiene uno por defecto que sirve la aplicación web
+# Start your React app
+CMD ["npm", "run", "start"]
