@@ -115,7 +115,7 @@ const Register = ({ userSession }: { userSession: UserSession | null }) => {
         <Button type="submit" disabled={!formik.isValid} variant="contained">
           Register
         </Button>
-        <Button variant="contained" onClick={() => navigate("/login")}>
+        <Button variant="contained" onClick={() => navigate("/")}>
           Login
         </Button>
       </form>

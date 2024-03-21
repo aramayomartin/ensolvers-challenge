@@ -35,7 +35,7 @@ const Home = ({
   const logOut = () => {
     setUserSession(null);
     window.localStorage.removeItem("userSession");
-    navigate("/login");
+    navigate("/");
   };
 
   useEffect(() => {
