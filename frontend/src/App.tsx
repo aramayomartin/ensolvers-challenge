@@ -20,12 +20,15 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route
-          path="/login"
+          path="/"
           element={
             <Login setUserSession={setUserSession} userSession={userSession} />
           }
         />
-        <Route path="/register" element={<Register userSession={userSession}/>} />
+        <Route
+          path="/register"
+          element={<Register userSession={userSession} />}
+        />
         <Route
           path="/home"
           element={
