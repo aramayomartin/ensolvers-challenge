@@ -11,6 +11,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Note } from '@/entities/note.entity';
 import { Repository } from 'typeorm';
 import { CategoriesService } from '../categories/categories.service';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 @UsePipes(ValidationPipe)
@@ -18,20 +19,33 @@ export class NotesService {
   constructor(
     @InjectRepository(Note) private repository: Repository<Note>,
     private readonly categoryService: CategoriesService,
+    private readonly userService: UsersService,
   ) {}
 
   async create(createNoteDto: CreateNoteDto) {
+    const user = await this.userService.findById(createNoteDto.userId);
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
     const note = this.repository.create(createNoteDto);
     const categories = await this.categoryService.findByIds(
       createNoteDto.categoriesIds,
     );
     delete createNoteDto.categoriesIds;
-    Object.assign(note, { ...createNoteDto, categories });
+    delete createNoteDto.userId;
+    Object.assign(note, { ...createNoteDto, categories, user });
     return await this.repository.save(note);
   }
 
   async findAll() {
     return await this.repository.find({ relations: ['categories'] });
+  }
+
+  async findAllByUser(id: number) {
+    return await this.repository.find({
+      where: { user: { id } },
+      relations: ['categories', 'user'],
+    });
   }
 
   async findOne(id: number) {

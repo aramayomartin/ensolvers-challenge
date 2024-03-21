@@ -5,7 +5,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Category, Note } from "../../../types/types";
+import { Category, Note, UserSession } from "../../../types/types";
 import NotesCards from "../../../components/NotesCards";
 import AddButton from "../../../components/AddButton";
 import ModalComponent from "../../../components/Modal";
@@ -16,10 +16,12 @@ const Notes = ({
   notes,
   refresh,
   categories,
+  userSession,
 }: {
   notes: Note[];
   refresh: () => void;
   categories: Category[];
+  userSession: UserSession | null;
 }) => {
   const [openAddModal, setOpenAddModal] = useState<boolean>(false);
   const [selectedCategories, setSelectedCategories] = useState<number[]>([]);
@@ -98,7 +100,13 @@ const Notes = ({
           open={openAddModal}
           close={closeModal}
           children={
-            <AddNoteForm categories={categories} close={closeAndRefresh} />
+            <AddNoteForm
+              categories={categories}
+              close={closeAndRefresh}
+              userId={
+                userSession && userSession.user.id ? userSession.user.id : 0
+              }
+            />
           }
         />
       )}

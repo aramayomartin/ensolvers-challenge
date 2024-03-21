@@ -6,4 +6,5 @@ export class CreateNoteDto {
   @IsNotEmpty()
   content: string;
   categoriesIds?: number[];
+  userId: number;
 }

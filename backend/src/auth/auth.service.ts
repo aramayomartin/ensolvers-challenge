@@ -1,29 +1,26 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { RegisterAuthDto } from './dto/register-auth.dto';
 import { LoginAuthDto } from './dto/login-auth.dto';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { compareSync, hashSync } from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '@/entities/user.entity';
+import { UsersService } from '@/rest/users/users.service';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @InjectRepository(User) private repository: Repository<User>,
     private jwtService: JwtService,
+    private userService: UsersService,
   ) {}
   async register(userObj: RegisterAuthDto) {
     const { password } = userObj;
     var hash = hashSync(password, 10);
     userObj = { ...userObj, password: hash };
-    const user = this.repository.create(userObj);
-    return await this.repository.save(user);
+    return await this.userService.create(userObj);
   }
 
   async login(userObj: LoginAuthDto) {
     const { password, email } = userObj;
-    const user = await this.repository.findOne({ where: { email } });
+    const user = await this.userService.findByEmail(email);
     if (!user) throw new HttpException('USER_NOT_FOUND', 404);
     const match = compareSync(password, user.password);
     if (!match) throw new HttpException('PASSWORD_INVALID', 403);

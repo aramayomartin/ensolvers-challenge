@@ -14,7 +14,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import { useState } from "react";
 import ModalComponent from "./Modal";
 import { EditNoteForm } from "../pages/Home/forms/forms";
-import axios from "axios";
+import { remove, patch } from "../api";
 
 interface CardComponentInterface {
   note: Note;
@@ -36,21 +36,16 @@ const CardComponent = ({
   };
 
   const deleteNote = async () => {
-    const { data } = await axios.delete(
-      `http://localhost:3000/notes/${note.id}`
-    );
+    const { data } = await remove(`notes/${note.id}`);
     data && refresh();
   };
 
   const updateState = async () => {
-    const { data } = await axios.patch(
-      `http://localhost:3000/notes/${note.id}`,
-      {
-        ...note,
-        archived: !note.archived,
-        categoriesIds: note.categories.map((c) => c.id),
-      }
-    );
+    const { data } = await patch(`notes/${note.id}`, {
+      ...note,
+      archived: !note.archived,
+      categoriesIds: note.categories.map((c) => c.id),
+    });
     data && refresh();
   };
 

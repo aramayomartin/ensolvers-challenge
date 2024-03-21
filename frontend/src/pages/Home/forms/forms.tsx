@@ -11,8 +11,8 @@ import {
   Typography,
 } from "@mui/material";
 import { Category, Note } from "../../../types/types";
-import axios from "axios";
 import { useEffect } from "react";
+import { patch, post } from "../../../api";
 
 export const AddCategoryForm = ({ close }: { close: () => void }) => {
   const validationSchema = Yup.object({
@@ -28,7 +28,7 @@ export const AddCategoryForm = ({ close }: { close: () => void }) => {
     initialValues,
     validationSchema,
     onSubmit: async (values) => {
-      await axios.post("http://localhost:3000/categories", values);
+      await post("categories", values);
       close();
     },
   });
@@ -62,22 +62,27 @@ export const AddCategoryForm = ({ close }: { close: () => void }) => {
 export const AddNoteForm = ({
   close,
   categories,
+  userId,
 }: {
   close: () => void;
   categories: Category[];
+  userId?: number;
 }) => {
   const validationSchema = Yup.object({
     title: Yup.string().required("Title required"),
     content: Yup.string().required("Content required"),
+    userId: Yup.number().required("UserId required"),
   });
   const initialValues: {
     title: string;
     content: string;
     categoriesIds: number[];
+    userId: number | undefined;
   } = {
     title: "",
     content: "",
     categoriesIds: [],
+    userId,
   };
   const formik = useFormik({
     initialErrors: {
@@ -90,7 +95,7 @@ export const AddNoteForm = ({
       content: string;
       categoriesIds: number[];
     }) => {
-      await axios.post("http://localhost:3000/notes", values);
+      await post("notes", values);
       close();
     },
   });
@@ -98,7 +103,12 @@ export const AddNoteForm = ({
   return (
     <form
       onSubmit={formik.handleSubmit}
-      style={{ display: "flex", flexDirection: "column", gap: "20px", width:"500px" }}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        gap: "20px",
+        width: "500px",
+      }}
     >
       <Typography fontSize="0.875rem" fontWeight="600">
         Title
@@ -212,13 +222,12 @@ export const EditNoteForm = ({
       content: string;
       categoriesIds: number[];
     }) => {
-      await axios.patch(`http://localhost:3000/notes/${note.id}`, values);
+      await patch(`notes/${note.id}`, values);
       close();
     },
   });
 
   useEffect(() => {
-    console.log(note.categories.map((c) => c.id));
     formik.setFieldValue(
       "categoriesIds",
       note.categories.map((c) => c.id)
