@@ -10,3 +10,15 @@ export interface Note {
   categories: Category[];
   archived: boolean;
 }
+
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+}
+
+export interface UserSession{
+  user: User;
+  token: string;
+}
